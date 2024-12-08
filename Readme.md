@@ -44,9 +44,13 @@ Use TF-IDF Vectorization to transform the cleaned text into numerical features, 
 Train multiple classifiers, including:
 
   Naive Bayes (MultinomialNB)
+  
   Passive-Aggressive Classifier
+
   Voting Classifier (combining multiple classifiers for better accuracy)
+  
   Stacking Classifier (combining base models with a final estimator)
+  
   Evaluate models using accuracy, precision, recall, and F1-score.
 
 4. Hyperparameter Tuning
@@ -64,5 +68,7 @@ Investigate misclassified reviews to identify areas for further improvement.
 Model Deployment (Frontend): Integrate the trained models into a user-facing application (e.g., a web app) where users can submit reviews and get predictions (Fake/Real).
 
 Future Work:
+
 Real-Time Fake Review Detection System:
+
 The next step is to develop a web-based system that integrates with e-commerce platforms to classify reviews in real-time as either computer-generated (bot) or original (OR). This system will automatically process new reviews, providing immediate feedback and helping to filter fake reviews on e-commerce sites. The model will be optimized for scalability, ensuring it performs efficiently on larger datasets and in real-time environments. The interface will be user-friendly, allowing administrators to view results and trends easily. Additionally, the model will be adapted to work across multiple platforms and product categories, with ongoing improvements using advanced techniques like deep learning for better accuracy and generalization.
