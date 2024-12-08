@@ -1,3 +1,11 @@
+"""
+Author: Jay A. Panchal & Jil P. Makwana
+Description: This project aims to detect fake reviews from e-commerce websites using
+machine learning models by processing, cleaning, and extracting features from textual data to classify reviews as FAKE or REAL.
+"""
+
+"--------------------------------------------------------------------------------------------------------------------"
+
 import pandas as pd
 import os
 import numpy as np
@@ -16,21 +24,17 @@ import seaborn as sns
 import nltk
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.ensemble import AdaBoostClassifier
-from xgboost import XGBClassifier
 from sklearn.ensemble import StackingClassifier
-import pickle
 import warnings
+import pickle
 from sklearn.ensemble import VotingClassifier
 from sklearn.metrics import precision_score
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 
+"--------------------------------------------------------------------------------------------------------------------"
 
-
-
+# Visualizing the distribution of target classes (Fake/Real)
 file_path = r'.\data\fake reviews dataset.csv'  
 
 if os.path.exists(file_path):
@@ -38,8 +42,6 @@ if os.path.exists(file_path):
     print("Data loaded successfully!")  
 else:
     print(f"File not found: {file_path}")
-
-print(data.head)
 
 
 warnings.filterwarnings("ignore", category=FutureWarning)
@@ -52,11 +54,14 @@ plt.xlabel('Label')
 plt.ylabel('Count')
 plt.show()
 
+
+# Check for missing values and class distribution
 print(data.isnull().sum())
 print(data['label'].value_counts())
 
+"--------------------------------------------------------------------------------------------------------------------"
 
-
+# Data cleaning function to remove HTML tags, punctuation, and convert text to lowercase
 import re
 
 def clean_text(text):
@@ -68,10 +73,12 @@ def clean_text(text):
 data['cleaned_text'] = data['text_'].apply(clean_text)
 print("The data has been successfully cleaned and stored in the 'cleaned_text' column.")
 
+"--------------------------------------------------------------------------------------------------------------------"
 
+# Applying cleaning function to the dataset
 data['text_length'] = data['cleaned_text'].apply(len)
 
-
+# Plot the distribution of text lengths
 plt.figure(figsize=(10, 6))
 sns.histplot(data['text_length'], bins=30, kde=True)
 plt.title('text length distribution')
@@ -79,7 +86,9 @@ plt.xlabel('Length of the text')
 plt.ylabel('frequency')
 plt.show()
 
+"--------------------------------------------------------------------------------------------------------------------"
 
+# Tokenizing the text by removing stopwords (common words that don't add much value)
 nltk.download('stopwords', quiet=True) 
 nltk.download('punkt_tab', quiet=True)
 from nltk.corpus import stopwords
@@ -91,16 +100,17 @@ def tokenize(text):
     tokens = word_tokenize(text)
     tokens = [word for word in tokens if word not in stop_words] 
     return tokens
+
+# Applying tokenization to the cleaned text
 data['tokens'] = data['cleaned_text'].apply(tokenize)
 
+"--------------------------------------------------------------------------------------------------------------------"
 
+# Visualizing most frequent words in FAKE and REAL reviews
 from collections import Counter
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
-
-
-
 
 def plot_top_words(data, category):
     tokens = [token for tokens_list in data[data['label'] == category]['tokens'] for token in tokens_list]
@@ -117,48 +127,25 @@ def plot_top_words(data, category):
     plt.ylabel('Words')
     plt.show()
 
+# Ploting for both FAKE and REAL reviews
 for label in data['label'].unique():
     plot_top_words(data, label)
 
+"--------------------------------------------------------------------------------------------------------------------"
 
+# Feature extraction using TF-IDF Vectorizer 
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-vectorizer = TfidfVectorizer(max_features=5000)  
-X = vectorizer.fit_transform(data['cleaned_text']).toarray()  
-y = data['label']
+vectorizer = TfidfVectorizer(max_features=5000)  # Limit to top 5000 features
+X = vectorizer.fit_transform(data['cleaned_text']).toarray()  # Convert text to feature vectors
+y = data['label']  # Target variable (FAKE or REAL)
 
-from sklearn.model_selection import train_test_split
-
+# Spliting dataset into training and test sets (80% train, 20% test)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
+"--------------------------------------------------------------------------------------------------------------------"
 
-from sklearn.metrics import classification_report
-
-# y_pred = model.predict(X_test)
-# print(classification_report(y_test, y_pred))
-
-# def train_classifier(clf,X_train,y_train,X_test,y_test):
-#     clf.fit(X_train,y_train)
-#     y_pred = clf.predict(X_test)
-#     accuracy = accuracy_score(y_test,y_pred)
-#     precision = precision_score(y_test, y_pred, average='weighted')
-    
-#     return accuracy,precision
-
-# accuracy_scores = []
-# precision_scores = []
-
-# for name,clf in clfs.items():    
-#     current_accuracy,current_precision = train_classifier(clf, X_train,y_train,X_test,y_test)
-    
-#     accuracy_scores.append(current_accuracy)
-#     precision_scores.append(current_precision)
-
-# performance_df = pd.DataFrame({'Algorithm':clfs.keys(),'Accuracy':accuracy_scores,'Precision':precision_scores}).sort_values('Precision',ascending=False)
-
-# performance_df.reset_index(drop = True)
-
-"------------------------------------------------------------------"
+# Ploting confusion matrix
 def plot_confusion_matrix(cm, classes,
                           normalize=False,
                           title='Confusion matrix',
@@ -186,27 +173,48 @@ def plot_confusion_matrix(cm, classes,
     plt.ylabel('True label')
     plt.xlabel('Predicted label')
 
+"--------------------------------------------------------------------------------------------------------------------"
+
+"""
+Here we will Training Multinomial Naive Bayes classifier!!!
+Naive Bayes is a probabilistic classifier based on Bayes' Theorem, assuming feature independence, and classifies 
+data by selecting the class with the highest probability, commonly used for text classification like spam detection 
+and sentiment analysis.
+"""
 classifier = MultinomialNB()
 classifier.fit(X_train, y_train)
 pred = classifier.predict(X_test)
 score = metrics.accuracy_score(y_test, pred)
 print("accuracy:   %0.3f" % score)
+
+# Confusion matrix for Multinomial Naive Bayes
 cm = metrics.confusion_matrix(y_test, pred)
 plot_confusion_matrix(cm, classes=['FAKE', 'REAL'], normalize=False)
 plt.show()
 
+"--------------------------------------------------------------------------------------------------------------------"
 
+"""
+Training Passive Aggressive Classifier!! 
+The Passive Aggressive Classifier is an online learning algorithm that updates its model aggressively when it 
+misclassifies and passively when it’s correct, making it effective for large-scale and streaming data tasks.
+"""
 
 from sklearn.linear_model import PassiveAggressiveClassifier
+
 linear_clf = PassiveAggressiveClassifier(max_iter=50)
 linear_clf.fit(X_train, y_train)
 pred = linear_clf.predict(X_test)
 score = metrics.accuracy_score(y_test, pred)
 print("accuracy:   %0.3f" % score)
+
+# Confusion matrix for Passive Aggressive Classifier
 cm = metrics.confusion_matrix(y_test, pred)
 plot_confusion_matrix(cm, classes=['FAKE Data', 'REAL Data'])
 
+"--------------------------------------------------------------------------------------------------------------------"
 
+# Tuning the Naive Bayes classifier using different alpha values
 previous_score=0
 for alpha in np.arange(0,1,0.1):
     sub_classifier=MultinomialNB(alpha=alpha)
@@ -217,17 +225,21 @@ for alpha in np.arange(0,1,0.1):
         classifier=sub_classifier
     print("Alpha: {}, Score : {}".format(alpha,score))
 
+"--------------------------------------------------------------------------------------------------------------------"
+
+# Feature importance and sentence analysis
 feature_names = vectorizer.get_feature_names_out()
 feature_log_prob = classifier.feature_log_prob_
 
 top_positive_idx = feature_log_prob[1].argsort()[-10:][::-1] 
 top_negative_idx = feature_log_prob[1].argsort()[:10] 
 
-# 5. Extract top positive and negative words
+# Extract top positive and negative words
 feature_names = vectorizer.get_feature_names_out()
 top_positive_words = feature_names[top_positive_idx]
 top_negative_words = feature_names[top_negative_idx]
 
+# Function to get sentences containing important words
 def get_sentences_with_keywords(words, sentences):
     sentences_with_keywords = []
     for sentence in sentences:
@@ -235,14 +247,15 @@ def get_sentences_with_keywords(words, sentences):
             sentences_with_keywords.append(sentence)
     return sentences_with_keywords
 
+# Find sentences with top positive and negative words
 top_positive_sentences = get_sentences_with_keywords(top_positive_words, data['cleaned_text'])
 top_negative_sentences = get_sentences_with_keywords(top_negative_words, data['cleaned_text'])
 
-
+# Count occurrences of positive and negative words in these sentences
 positive_counts = {word: sum(word in sentence for sentence in top_positive_sentences) for word in top_positive_words}
 negative_counts = {word: sum(word in sentence for sentence in top_negative_sentences) for word in top_negative_words}
 
-
+# Convert counts to DataFrame for plotting
 positive_df = pd.DataFrame(list(positive_counts.items()), columns=['Word', 'Count'])
 negative_df = pd.DataFrame(list(negative_counts.items()), columns=['Word', 'Count'])
 
@@ -267,32 +280,53 @@ plt.tight_layout()
 plt.show()
 
 
-"------------------------------------------------------------------"
-# This we will use for voting classifer!!!!
+"--------------------------------------------------------------------------------------------------------------------"
+"""
+This we will use for voting classifer (using multiple classifiers) with soft voting!!!!
+This code trains a Voting Classifier with Multinomial Naive Bayes, 
+Logistic Regression, and Random Forest using soft voting, then evaluates accuracy and 
+precision for the 'OR' class, with a Random Forest as the final estimator for a Stacking 
+Classifier to improve prediction performance.
+"""
 
-# mnb = MultinomialNB()
-# lrc = LogisticRegression(solver='liblinear', penalty='l1')
-# rfc = RandomForestClassifier(n_estimators=50, random_state=2)
+mnb = MultinomialNB()
+lrc = LogisticRegression(solver='liblinear', penalty='l1')
+rfc = RandomForestClassifier(n_estimators=50, random_state=2)
 
-# voting = VotingClassifier(estimators=[('LR', lrc), ('nb', mnb), ('RF', rfc)],voting='soft')
+voting = VotingClassifier(estimators=[('LR', lrc), ('nb', mnb), ('RF', rfc)],voting='soft')
 
-# voting.fit(X_train,y_train)
+# Fit the model and evaluate performance
+voting.fit(X_train,y_train)
 
-# y_pred = voting.predict(X_test)
-# print("Accuracy",accuracy_score(y_test,y_pred))
-# print("Precision",precision_score(y_test,y_pred))
+y_pred = voting.predict(X_test)
+print("Accuracy of the model (Voting classifier)",accuracy_score(y_test,y_pred))
+print("Precision for Positive Class 'OR' (Voting classifier)",precision_score(y_test,y_pred, pos_label='OR'))
 
-# estimators = [('LR', lrc), ('nb', mnb), ('RF', rfc)]
-# final_estimator = RandomForestClassifier(n_estimators=50, random_state=2)
+estimators = [('LR', lrc), ('nb', mnb), ('RF', rfc)]
+final_estimator = RandomForestClassifier(n_estimators=50, random_state=2)
 
-# clf = StackingClassifier(estimators=estimators, final_estimator=final_estimator)
 
-# clf.fit(X_train,y_train)
-# y_pred = clf.predict(X_test)
-# print("Accuracy",accuracy_score(y_test,y_pred))
-# print("Precision",precision_score(y_test,y_pred))
+"--------------------------------------------------------------------------------------------------------------------"
 
-# pickle.dump(vectorizer,open('vectorizer.pkl','wb'))
-# pickle.dump(mnb,open('model.pkl','wb'))
+"""
+A stacking classifier combines multiple base models (estimators) whose predictions are 
+merged by a final estimator, and estimators is a list of tuples, each containing a model's
+name and object, e.g., estimators = [('lr', LogisticRegression()), ('rf', RandomForestClassifier()), 
+('nb', MultinomialNB())].
+Stacking Classifier - Combining multiple base models and using a final estimator
+"""
+clf = StackingClassifier(estimators=estimators, final_estimator=final_estimator)
 
-"----------------------------------------------------------------------"
+clf.fit(X_train,y_train)
+y_pred = clf.predict(X_test)
+print("Accuracy of the model(Stacking classifier)",accuracy_score(y_test,y_pred))
+print("Precision for Positive Class 'OR' (Stacking classifier)", precision_score(y_test, y_pred, pos_label='OR'))
+
+"--------------------------------------------------------------------------------------------------------------------"
+
+# Save the trained models (vectorizer and classifier) using pickle
+pickle.dump(vectorizer,open('vectorizer.pkl','wb'))
+pickle.dump(mnb,open('model.pkl','wb'))
+"--------------------------------------------------------------------------------------------------------------------"
+
+print("🚀 Mission Accomplished: Task Complete! 🎉💥")
