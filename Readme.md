@@ -35,10 +35,10 @@ Use TF-IDF Vectorization to transform the cleaned text into numerical features, 
 3. Model Training and Evaluation
 Train multiple classifiers, including:
 
-    Naive Bayes (MultinomialNB)
-       Passive-Aggressive Classifier
-         Voting Classifier (combining multiple classifiers for better accuracy)
-            Stacking Classifier (combining base models with a final estimator)
+        Naive Bayes (MultinomialNB)
+        Passive-Aggressive Classifier
+        Voting Classifier (combining multiple classifiers for better accuracy)
+        Stacking Classifier (combining base models with a final estimator)
   
     Evaluate models using accuracy, precision, recall, and F1-score.
 
