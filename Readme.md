@@ -8,8 +8,7 @@ Technologies Used:
     Scikit-learn: Machine learning library for data preprocessing, model training, and evaluation.
     Matplotlib & Seaborn: Libraries for data visualization.
     NLTK: Natural Language Processing (NLP) library for text tokenization and stopword removal.
-
-Pickle: For model serialization and saving the trained models.
+    Pickle: For model serialization and saving the trained models.
 
 
 Dataset: 
