@@ -2,21 +2,24 @@ Aim:
 This project focuses on detecting fake reviews from e-commerce websites using machine learning models. It involves processing, cleaning, and extracting features from textual data to classify reviews as FAKE or REAL. The dataset consists of user reviews labeled as either FAKE or REAL.
 
 Technologies Used: 
-Python: Programming language for data processing, machine learning, and model evaluation.
-Pandas: Library for data manipulation and analysis.
-Scikit-learn: Machine learning library for data preprocessing, model training, and evaluation.
-Matplotlib & Seaborn: Libraries for data visualization.
-NLTK: Natural Language Processing (NLP) library for text tokenization and stopword removal.
+
+    Python: Programming language for data processing, machine learning, and model evaluation.
+    Pandas: Library for data manipulation and analysis.
+    Scikit-learn: Machine learning library for data preprocessing, model training, and evaluation.
+    Matplotlib & Seaborn: Libraries for data visualization.
+    NLTK: Natural Language Processing (NLP) library for text tokenization and stopword removal.
+
 Pickle: For model serialization and saving the trained models.
 
 
 Dataset: 
 The dataset consists of e-commerce product reviews labeled as FAKE or REAL, containing the following columns:
-category: Product category.
-rating: Numerical rating (1-5 scale).
-label: Class label indicating whether the review is fake or real.
-text_: The actual review text.
 
+    category: Product category.   
+    rating: Numerical rating (1-5 scale). 
+    label: Class label indicating whether the review is fake or real.
+    text_: The actual review text.
+        
 The dataset is split into 80% training and 20% testing data.
 
 Steps in the Project
@@ -32,28 +35,25 @@ Use TF-IDF Vectorization to transform the cleaned text into numerical features, 
 3. Model Training and Evaluation
 Train multiple classifiers, including:
 
-  Naive Bayes (MultinomialNB)
+    Naive Bayes (MultinomialNB)
+       Passive-Aggressive Classifier
+         Voting Classifier (combining multiple classifiers for better accuracy)
+            Stacking Classifier (combining base models with a final estimator)
   
-  Passive-Aggressive Classifier
+    Evaluate models using accuracy, precision, recall, and F1-score.
 
-  Voting Classifier (combining multiple classifiers for better accuracy)
-  
-  Stacking Classifier (combining base models with a final estimator)
-  
-  Evaluate models using accuracy, precision, recall, and F1-score.
-
-4. Hyperparameter Tuning
+5. Hyperparameter Tuning
 Tune the Naive Bayes classifier’s regularization parameter (alpha) and other classifiers’ parameters to improve model performance.
 
-5. Model Interpretability
+6. Model Interpretability
 Extract top positive and negative words from the Naive Bayes model using the feature_log_prob_ attribute.
 Plot frequent words for each class (Fake/Real) to help understand model behavior.
 
-6. Model Comparison
+7. Model Comparison
 Compare the models based on precision, recall, F1-score, and ROC-AUC.
 Investigate misclassified reviews to identify areas for further improvement.
 
-7. Model Deployment (Future Work)
+8. Model Deployment (Future Work)
 Model Deployment (Frontend): Integrate the trained models into a user-facing application (e.g., a web app) where users can submit reviews and get predictions (Fake/Real).
 
 Future Work:
