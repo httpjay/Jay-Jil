@@ -16,7 +16,8 @@ NLTK: Natural Language Processing (NLP) library for text tokenization and stopwo
 Pickle: For model serialization and saving the trained models.
 
 
-Dataset
+Dataset: 
+
 The dataset consists of e-commerce product reviews labeled as FAKE or REAL, containing the following columns:
 
 category: Product category.
