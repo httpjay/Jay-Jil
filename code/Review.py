@@ -56,6 +56,7 @@ plt.show()
 
 
 # Check for missing values and class distribution
+print("Checking for Missing Values and Class Distribution: ")
 print(data.isnull().sum())
 print(data['label'].value_counts())
 
@@ -72,6 +73,7 @@ def clean_text(text):
 
 data['cleaned_text'] = data['text_'].apply(clean_text)
 print("The data has been successfully cleaned and stored in the 'cleaned_text' column.")
+print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 
 "--------------------------------------------------------------------------------------------------------------------"
 
@@ -185,8 +187,12 @@ classifier = MultinomialNB()
 classifier.fit(X_train, y_train)
 pred = classifier.predict(X_test)
 score = metrics.accuracy_score(y_test, pred)
-print("accuracy:   %0.3f" % score)
-
+report = classification_report(y_test, pred, output_dict=True)
+report_df = pd.DataFrame(report).transpose()
+print("Report for Naive Bayes Classifier")
+print(report_df)
+print("Accuracy for Naive Bayes Classifier:   %0.3f" % score)
+print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 # Confusion matrix for Multinomial Naive Bayes
 cm = metrics.confusion_matrix(y_test, pred)
 plot_confusion_matrix(cm, classes=['FAKE', 'REAL'], normalize=False)
@@ -202,11 +208,18 @@ misclassifies and passively when it’s correct, making it effective for large-s
 
 from sklearn.linear_model import PassiveAggressiveClassifier
 
-linear_clf = PassiveAggressiveClassifier(max_iter=50)
+linear_clf = PassiveAggressiveClassifier(max_iter=100)
 linear_clf.fit(X_train, y_train)
 pred = linear_clf.predict(X_test)
 score = metrics.accuracy_score(y_test, pred)
-print("accuracy:   %0.3f" % score)
+report = classification_report(y_test, pred, output_dict=True)
+report_df = pd.DataFrame(report).transpose()
+print("Report for Passive Aggressive  Classifier")
+print(report_df)
+print("Accuracy for Passive Aggressive Classifier:   %0.3f" % score)
+print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
+
 
 # Confusion matrix for Passive Aggressive Classifier
 cm = metrics.confusion_matrix(y_test, pred)
@@ -225,6 +238,7 @@ for alpha in np.arange(0,1,0.1):
         classifier=sub_classifier
     print("Alpha: {}, Score : {}".format(alpha,score))
 
+print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 "--------------------------------------------------------------------------------------------------------------------"
 
 # Feature importance and sentence analysis
@@ -299,8 +313,12 @@ voting = VotingClassifier(estimators=[('LR', lrc), ('nb', mnb), ('RF', rfc)],vot
 voting.fit(X_train,y_train)
 
 y_pred = voting.predict(X_test)
+report = classification_report(y_test, y_pred, output_dict=True)
+report_df = pd.DataFrame(report).transpose()
+print("Report for Voting Classifier")
+print(report_df)
 print("Accuracy of the model (Voting classifier)",accuracy_score(y_test,y_pred))
-print("Precision for Positive Class 'OR' (Voting classifier)",precision_score(y_test,y_pred, pos_label='OR'))
+print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
 
 estimators = [('LR', lrc), ('nb', mnb), ('RF', rfc)]
 final_estimator = RandomForestClassifier(n_estimators=50, random_state=2)
@@ -319,8 +337,13 @@ clf = StackingClassifier(estimators=estimators, final_estimator=final_estimator)
 
 clf.fit(X_train,y_train)
 y_pred = clf.predict(X_test)
+report = classification_report(y_test, y_pred, output_dict=True)
+report_df = pd.DataFrame(report).transpose()
+print("Report for Voting Classifier")
+print(report_df)
 print("Accuracy of the model(Stacking classifier)",accuracy_score(y_test,y_pred))
-print("Precision for Positive Class 'OR' (Stacking classifier)", precision_score(y_test, y_pred, pos_label='OR'))
+print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+
 
 "--------------------------------------------------------------------------------------------------------------------"
 
